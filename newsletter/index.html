@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+  <title>Let's stay in touch</title>
+  <link rel="icon" type="image/svg+xml"
+    href="idol-signature-favicon.svg">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --green: #22DC22;
+      --green-dark: #1db81d;
+      --green-light: rgba(34, 220, 34, 0.10);
+      --bg: #fff;
+      --text: #111;
+      --text-dim: #828282;
+      --border: #ddd;
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', 'Helvetica Neue',
+        Helvetica, Arial, sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* --- typography --- */
+    h1 {
+      font-weight: 400;
+      font-size: 1.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      max-width: 400px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* --- form --- */
+    .form-wrapper {
+      width: 100%;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .email-input {
+      flex: 1;
+      padding: 0.6rem 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .email-input::placeholder {
+      color: #aaa;
+    }
+
+    .email-input:focus {
+      border-color: var(--green-dark);
+      box-shadow: 0 0 0 2px var(--green-light);
+    }
+
+    .submit-btn {
+      padding: 0.6rem 1.25rem;
+      border: none;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+      background: var(--green-dark);
+      transition:
+        background 0.2s ease,
+        opacity 0.2s ease;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      background: #19a519;
+    }
+
+    .submit-btn:active:not(:disabled) {
+      background: #159315;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-text,
+    .btn-spinner {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn-spinner {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+    }
+
+    .submit-btn {
+      position: relative;
+    }
+
+    .submit-btn.loading .btn-text {
+      opacity: 0;
+    }
+
+    .submit-btn.loading .btn-spinner {
+      opacity: 1;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    /* --- error --- */
+    .error-msg {
+      margin-top: 0.5rem;
+      font-size: 0.82rem;
+      color: #d14;
+      text-align: center;
+      min-height: 1.25rem;
+    }
+
+    /* --- success state --- */
+    .success-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    .success-state.visible {
+      display: flex;
+    }
+
+    .check-ring {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--green-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .check-ring svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .check-ring svg path {
+      stroke-dasharray: 30;
+      stroke-dashoffset: 30;
+      animation: drawCheck 0.5s ease 0.3s forwards;
+    }
+
+    .success-heading {
+      font-weight: 400;
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .success-sub {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    /* --- footer: contact + signature --- */
+    .footer {
+      width: 100%;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+
+    .contact-info {
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .contact-info strong {
+      font-weight: 500;
+    }
+
+    .contact-info a {
+      color: var(--green-dark);
+      text-decoration: none;
+    }
+
+    .contact-info a:hover {
+      text-decoration: underline;
+    }
+
+    .logo {
+      width: 100px;
+      height: 100px;
+      flex-shrink: 0;
+    }
+
+    /* --- responsive --- */
+    @media (max-width: 480px) {
+      .input-group {
+        flex-direction: column;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 0.7rem;
+      }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes drawCheck {
+      to { stroke-dashoffset: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Let's stay in touch</h1>
+
+    <p class="subtitle">
+      If you want to get personal updates
+      from me in the future, please enter your
+      personal email address here. I expect to
+      send 1-2 emails per year.
+    </p>
+
+    <div class="form-wrapper" id="formWrapper">
+      <form id="subscribeForm" novalidate>
+        <div class="input-group">
+          <input
+            type="email"
+            class="email-input"
+            id="emailInput"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          >
+          <button
+            type="submit"
+            class="submit-btn"
+            id="submitBtn"
+          >
+            <span class="btn-text">Subscribe</span>
+            <span class="btn-spinner">
+              <span class="spinner"></span>
+            </span>
+          </button>
+        </div>
+        <div class="error-msg" id="errorMsg"></div>
+      </form>
+    </div>
+
+    <div class="success-state" id="successState">
+      <div class="check-ring">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path
+            d="M5 13l4 4L19 7"
+            stroke="#fff"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+      <div class="success-heading">
+        You're on the list!
+      </div>
+      <div class="success-sub">
+        I'll be in touch.
+      </div>
+    </div>
+
+    <div class="footer">
+      <img
+        src="idol-signature-glow-wider.svg"
+        alt=""
+        class="logo"
+        width="100"
+        height="100"
+      >
+
+      <div class="contact-info">
+        <strong>Devin Lehmacher</strong><br>
+        Email:
+        <a href="mailto:lehmacdj@gmail.com"
+          >lehmacdj@gmail.com</a><br>
+        Blog:
+        <a href="https://unformeddelta.wiki"
+          >unformeddelta.wiki</a><br>
+        Phone: +1 (864) 722-3014<br>
+        Signal: lehmacdj.86<br>
+        Discord: @lehmacdj
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL =
+      "https://email-sub-uhiq7ksiq3emy.azurewebsites.net/api/subscribe";
+
+    const form =
+      document.getElementById('subscribeForm');
+    const input =
+      document.getElementById('emailInput');
+    const btn =
+      document.getElementById('submitBtn');
+    const errorEl =
+      document.getElementById('errorMsg');
+    const formWrapper =
+      document.getElementById('formWrapper');
+    const successState =
+      document.getElementById('successState');
+
+    function isValidEmail() {
+      return !input.validity.typeMismatch;
+    }
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+    }
+
+    function clearError() {
+      errorEl.textContent = '';
+    }
+
+    function setLoading(on) {
+      btn.disabled = on;
+      btn.classList.toggle('loading', on);
+      input.disabled = on;
+    }
+
+    function showSuccess() {
+      formWrapper.style.display = 'none';
+      successState.classList.add('visible');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
+
+      const email = input.value.trim();
+
+      if (!email) {
+        showError('Please enter your email.');
+        input.focus();
+        return;
+      }
+
+      if (!isValidEmail()) {
+        showError(
+          'That doesn\u2019t look like a valid email.'
+        );
+        input.focus();
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json()
+            .catch(() => ({}));
+          throw new Error(
+            data.error || 'Something went wrong.'
+          );
+        }
+
+        showSuccess();
+      } catch (err) {
+        const msg = err.message === 'Failed to fetch'
+          ? 'Couldn\u2019t connect. Try again?'
+          : err.message;
+        showError(msg);
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>
